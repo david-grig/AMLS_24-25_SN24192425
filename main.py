@@ -6,48 +6,38 @@ import numpy as np
 
 from A.BreastMNISTCNN import BreastMNISTCNN
 from A.BreastMNISTDataset import BreastMNISTDataset
+from B.BloodMNISTCNNResNet import BloodMNISTCNNResNet
+from B.BloodMNISTDataset import BloodMNISTDataset
 
-data = np.load("/Users/david/PycharmProjects/AMLS_24-25_SN24192425/Datasets/breastmnist.npz")
+def main():
 
-print(data.files)
+    breast_data = np.load("/Users/david/PycharmProjects/AMLS_24-25_SN24192425/Datasets/breastmnist.npz")
+    breast_train_images = breast_data["train_images"]
+    breast_val_images = breast_data["val_images"]
+    breast_test_images = breast_data["test_images"]
+    breast_train_labels = breast_data["train_labels"]
+    breast_val_labels = breast_data["val_labels"]
+    breast_test_labels = breast_data["test_labels"]
+    breast_model = BreastMNISTCNN()
+    print("The breast model: ", breast_model)
 
-train_images = data["train_images"]
-val_images = data["val_images"]
-test_images = data["test_images"]
-train_labels = data["train_labels"]
-val_labels = data["val_labels"]
-test_labels = data["test_labels"]
+    breast_loaders = BreastMNISTDataset.get_data_loaders(breast_train_images, breast_train_labels)
 
-train_images = train_images / 255.0
+    # print(breast_loaders)
 
-print(f"Training data: {len(train_images)}, Validation data: {len(val_images)}, Testing data: {len(test_images)}")
+    blood_data = np.load("/Users/david/PycharmProjects/AMLS_24-25_SN24192425/Datasets/bloodmnist.npz")
+    blood_train_images = blood_data["train_images"]
+    blood_val_images = blood_data["val_images"]
+    blood_test_images = blood_data["test_images"]
+    blood_train_labels = blood_data["train_labels"]
+    blood_val_labels = blood_data["val_labels"]
+    blood_test_labels = blood_data["test_labels"]
+    blood_model = BloodMNISTCNNResNet()
+    print("The blood model: ", blood_model)
 
-transform = transforms.Compose([
-    transforms.ToPILImage(),
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(10),
-    transforms.ToTensor(),
-])
+    blood_loaders = BloodMNISTDataset.get_data_loaders(blood_train_images, blood_train_labels)
 
-train_loader = DataLoader(train_images, batch_size=32, shuffle=True)
-val_loader = DataLoader(val_images, batch_size=32, shuffle=False)
-test_loader = DataLoader(test_images, batch_size=32, shuffle=False)
+    print(blood_loaders)
 
-dataset = BreastMNISTDataset(train_images, train_labels, transform=transform)
-
-kf = KFold(n_splits=4, shuffle=True, random_state=42)
-for fold, (train_idx, val_idx) in enumerate(kf.split(train_images)):
-    train_subset = torch.utils.data.Subset(dataset, train_idx)
-    val_subset = torch.utils.data.Subset(dataset, val_idx)
-
-    train_loader = DataLoader(train_subset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_subset, batch_size=32, shuffle=False)
-
-    print(f"Fold {fold + 1}: Training data: {len(train_subset)}, Validation data: {len(val_subset)}")
-
-model = BreastMNISTCNN()
-
-print(model)
-example_input = torch.randn(8, 1, 28, 28)
-output = model(example_input)
-print(f"Output shape: {output.shape}")
+if __name__ == "__main__":
+    main()
