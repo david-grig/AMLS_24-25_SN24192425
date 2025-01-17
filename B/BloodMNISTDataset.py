@@ -1,6 +1,4 @@
-from sklearn.model_selection import KFold
-from torch.utils.data import Dataset, DataLoader, Subset
-
+from torch.utils.data import Dataset
 class BloodMNISTDataset(Dataset):
     def __init__(self, images, labels, transform=None):
         self.images = images

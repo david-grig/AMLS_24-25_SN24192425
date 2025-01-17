@@ -1,6 +1,5 @@
-from sklearn.model_selection import KFold
 import torch
-from torch.utils.data import Dataset, DataLoader, Subset
+from torch.utils.data import Dataset
 
 class BreastMNISTDataset(Dataset):
     def __init__(self, images, labels, transform=None):
